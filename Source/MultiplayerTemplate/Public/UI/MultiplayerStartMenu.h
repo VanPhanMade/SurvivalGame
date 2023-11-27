@@ -77,4 +77,5 @@ private:
 
 	int32 NumberPublicConnections{6};
 	FString MatchType{TEXT("FreeForAll")};
+	bool bCreateOptionsMenu = false;
 };

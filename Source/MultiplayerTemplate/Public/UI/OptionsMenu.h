@@ -16,5 +16,27 @@ class MULTIPLAYERTEMPLATE_API UOptionsMenu : public UUserWidget
 
 public:
 	void MenuInit();
+
+protected:
+	virtual bool Initialize() override;
+
+private:
+	UPROPERTY( meta = (BindWidget))
+	class UButton* ReturnButton;
+
+	UPROPERTY( meta = (BindWidget))
+	class UButton* ApplyButton;
+
+	UPROPERTY(EditAnywhere, Category = HUD, meta=(AllowPrivateAccess="true"))
+	TSubclassOf<class UUserWidget> StartMenuWidget;
+
+	UFUNCTION()
+	void ReturnButtonClicked();
+
+	UFUNCTION()
+	void ApplyButtonClicked();
+
+
+
 	
 };

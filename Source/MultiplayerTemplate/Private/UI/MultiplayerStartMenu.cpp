@@ -14,6 +14,7 @@ void UMultiplayerStartMenu::MenuInit(int32 NumberOfPublicConnections, FString Ty
 {
     NumberPublicConnections = NumberOfPublicConnections;
     MatchType = TypeOfMatch;
+    bCreateOptionsMenu = false;
 
     AddToViewport();
     SetVisibility(ESlateVisibility::Visible);
@@ -136,21 +137,11 @@ void UMultiplayerStartMenu::OnDestroySession(bool bWasSuccessful)
 {
     if(bWasSuccessful) 
     {
-        GEngine->AddOnScreenDebugMessage(
-            -1,
-            15.f,
-            FColor::Green,
-            FString::Printf(TEXT("Session destroyed menu callback!"))
-        );
+        GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Green, FString::Printf(TEXT("Session destroyed menu callback!")));
     }
     else
     {
-        GEngine->AddOnScreenDebugMessage(
-            -1,
-            15.f,
-            FColor::Green,
-            FString::Printf(TEXT("Session destroyed failed menu callback!"))
-        );
+        GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Green, FString::Printf(TEXT("Session destroyed failed menu callback!")));
     }
 }
 
@@ -185,8 +176,9 @@ void UMultiplayerStartMenu::OptionsButtonClicked()
 
     UOptionsMenu* Options = CreateWidget<UOptionsMenu>(GetWorld(), OptionsMenuWidget);
     Options->MenuInit();
+    bCreateOptionsMenu = true;
 
-    RemoveFromParent();
+    MenuTearDown();
 }
 
 void UMultiplayerStartMenu::QuitButtonClicked()
@@ -197,6 +189,8 @@ void UMultiplayerStartMenu::QuitButtonClicked()
 void UMultiplayerStartMenu::MenuTearDown()
 {
     RemoveFromParent();
+    if(bCreateOptionsMenu) return;
+
     UWorld* World = GetWorld();
     if(World)
     {
