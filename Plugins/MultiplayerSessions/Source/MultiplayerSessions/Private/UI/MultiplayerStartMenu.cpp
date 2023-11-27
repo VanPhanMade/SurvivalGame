@@ -7,6 +7,8 @@
 #include "GameInstanceSubsystems/MultiplayerSessionsSubsystem.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "OnlineSubsystemUtils.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "UI/OptionsMenu.h"
 
 void UMultiplayerStartMenu::MenuInit(int32 NumberOfPublicConnections, FString TypeOfMatch)
 {
@@ -179,12 +181,17 @@ void UMultiplayerStartMenu::JoinButtonClicked()
 
 void UMultiplayerStartMenu::OptionsButtonClicked()
 {
+    if(!IsValid(OptionsMenuWidget)) return;
 
+    UOptionsMenu* Options = CreateWidget<UOptionsMenu>(GetWorld(), OptionsMenuWidget);
+    Options->MenuInit();
+
+    RemoveFromParent();
 }
 
 void UMultiplayerStartMenu::QuitButtonClicked()
 {
-
+    UKismetSystemLibrary::QuitGame(GetWorld(), GetOwningPlayer(), EQuitPreference::Quit, true);
 }
 
 void UMultiplayerStartMenu::MenuTearDown()

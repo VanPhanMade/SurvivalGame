@@ -52,6 +52,9 @@ private:
 	UPROPERTY( meta = (BindWidget))
 	class UButton* QuitButton;
 
+	UPROPERTY(EditAnywhere, Category = HUD, meta=(AllowPrivateAccess="true"))
+	TSubclassOf<class UUserWidget> OptionsMenuWidget;
+
 	// Button on click call back functions
 	UFUNCTION()
 	void HostButtonClicked();
