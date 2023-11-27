@@ -24,7 +24,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMultiplayerOnUpdateSessionComplete,
  * 
  */
 UCLASS()
-class MULTIPLAYERSESSIONS_API UMultiplayerSessionsSubsystem : public UGameInstanceSubsystem
+class MULTIPLAYERTEMPLATE_API UMultiplayerSessionsSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 

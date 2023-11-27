@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Interfaces/OnlineSessionInterface.h"
 #include "MultiplayerStartMenu.generated.h"
 
 
@@ -11,7 +12,7 @@
  * 
  */
 UCLASS()
-class MULTIPLAYERSESSIONS_API UMultiplayerStartMenu : public UUserWidget
+class MULTIPLAYERTEMPLATE_API UMultiplayerStartMenu : public UUserWidget
 {
 	GENERATED_BODY()
 

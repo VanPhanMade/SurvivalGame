@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class MULTIPLAYERSESSIONS_API UOptionsMenu : public UUserWidget
+class MULTIPLAYERTEMPLATE_API UOptionsMenu : public UUserWidget
 {
 	GENERATED_BODY()
 
