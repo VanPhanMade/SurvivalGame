@@ -62,6 +62,16 @@ bool UMultiplayerStartMenu::Initialize()
         JoinButton->OnClicked.AddDynamic(this, &ThisClass::JoinButtonClicked);
     }
 
+    if(OptionsButton)
+    {
+        OptionsButton->OnClicked.AddDynamic(this, &ThisClass::OptionsButtonClicked);
+    }
+
+    if(QuitButton)
+    {
+        QuitButton->OnClicked.AddDynamic(this, &ThisClass::QuitButtonClicked);
+    }
+
     return true;
 }
 
@@ -74,15 +84,7 @@ void UMultiplayerStartMenu::NativeDestruct()
 
 void UMultiplayerStartMenu::OnCreateSession(bool bWasSuccessful)
 {
-    if(bWasSuccessful)
-    {
-        GEngine->AddOnScreenDebugMessage(
-            -1,
-            15.f,
-            FColor::Green,
-            FString::Printf(TEXT("Session created menu callback!"))
-        );
-    }
+    if(bWasSuccessful) GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Green, FString::Printf(TEXT("Session created menu callback!")));
 
     HostButton->SetIsEnabled(true);
     JoinButton->SetIsEnabled(true);
@@ -90,29 +92,17 @@ void UMultiplayerStartMenu::OnCreateSession(bool bWasSuccessful)
 
 void UMultiplayerStartMenu::OnFindSessions(const TArray<FOnlineSessionSearchResult> &SessionResults, bool bWasSuccessful)
 {
-    
-
     if(bWasSuccessful == false || MultiplayerSessionsSubsystem == nullptr) 
     {
         HostButton->SetIsEnabled(true);
         JoinButton->SetIsEnabled(true);
-        GEngine->AddOnScreenDebugMessage(
-            -1,
-            15.f,
-            FColor::Red,
-            FString::Printf(TEXT("Sessions searched failed menu callback!"))
-        );
+        GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, FString::Printf(TEXT("Sessions searched failed menu callback!")));
         return;
     }
     
     if(bWasSuccessful)
     {
-        GEngine->AddOnScreenDebugMessage(
-            -1,
-            15.f,
-            FColor::Green,
-            FString::Printf(TEXT("Sessions searched menu callback!"))
-        );
+        GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Green, FString::Printf(TEXT("Sessions searched menu callback!")));
         return;
     }
 }
@@ -185,6 +175,16 @@ void UMultiplayerStartMenu::JoinButtonClicked()
     {
         MultiplayerSessionsSubsystem->FindSessions(100);
     }
+}
+
+void UMultiplayerStartMenu::OptionsButtonClicked()
+{
+
+}
+
+void UMultiplayerStartMenu::QuitButtonClicked()
+{
+
 }
 
 void UMultiplayerStartMenu::MenuTearDown()

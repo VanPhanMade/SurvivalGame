@@ -46,12 +46,24 @@ private:
 	UPROPERTY( meta = (BindWidget))
 	class UButton* JoinButton;
 
-	// Callback functions for OnButtonClicked
+	UPROPERTY( meta = (BindWidget))
+	class UButton* OptionsButton;
+
+	UPROPERTY( meta = (BindWidget))
+	class UButton* QuitButton;
+
+	// Button on click call back functions
 	UFUNCTION()
 	void HostButtonClicked();
 
 	UFUNCTION()
 	void JoinButtonClicked();
+
+	UFUNCTION()
+	void OptionsButtonClicked();
+
+	UFUNCTION()
+	void QuitButtonClicked();
 
 	// Subsystem that contains all session handling logic
 	class UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;
