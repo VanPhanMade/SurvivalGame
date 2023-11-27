@@ -1,0 +1,64 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Blueprint/UserWidget.h"
+#include "MultiplayerStartMenu.generated.h"
+
+
+/**
+ * 
+ */
+UCLASS()
+class MULTIPLAYERSESSIONS_API UMultiplayerStartMenu : public UUserWidget
+{
+	GENERATED_BODY()
+
+public:
+	UFUNCTION(BlueprintCallable)
+	void MenuInit(int32 NumberOfPublicConnections = 4, FString TypeOfMatch = FString(TEXT("FreeForAll")));
+
+protected:
+
+	virtual bool Initialize() override; 
+	virtual void NativeDestruct() override;
+
+	// Callback functions to attach to multiplayer sessions subsystem class
+	// These must be UFUNCTIONs since we're using the delegate macro provided by Unreal
+	UFUNCTION()
+	void OnCreateSession(bool bWasSuccessful);
+	UFUNCTION()
+	void OnDestroySession(bool bWasSuccessful);
+	UFUNCTION()
+	void OnStartSession(bool bWasSuccessful);
+
+	// These callbacks don't need UFUNCTION macro since they're not dynamic delegates 
+	// in the multiplayer session
+	void OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful);
+	void OnJoinSession(EOnJoinSessionCompleteResult::Type Result);
+
+private:
+
+	UPROPERTY( meta = (BindWidget))
+	class UButton* HostButton;
+
+	UPROPERTY( meta = (BindWidget))
+	class UButton* JoinButton;
+
+	// Callback functions for OnButtonClicked
+	UFUNCTION()
+	void HostButtonClicked();
+
+	UFUNCTION()
+	void JoinButtonClicked();
+
+	// Subsystem that contains all session handling logic
+	class UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;
+
+	// Removes the widget when joining game session
+	void MenuTearDown();
+
+	int32 NumberPublicConnections{6};
+	FString MatchType{TEXT("FreeForAll")};
+};
