@@ -3,7 +3,10 @@
 
 #include "UI/OptionsMenu.h"
 #include "Components/Button.h"
+#include "Components/TextBlock.h"
 #include "UI/MultiplayerStartMenu.h"
+#include "GameFramework/GameUserSettings.h"
+#include "Math/UnrealMathUtility.h"
 
 void UOptionsMenu::MenuInit()
 {
@@ -35,6 +38,21 @@ void UOptionsMenu::MenuInit()
     {
         ApplyButton->OnClicked.AddDynamic(this, &ThisClass::ApplyButtonClicked);
     }
+
+    if(ScalabilityLevelUpButton && !ScalabilityLevelUpButton->OnClicked.IsBound())
+    {
+        ScalabilityLevelUpButton->OnClicked.AddDynamic(this, &ThisClass::IncreaseScalability);
+    }
+
+    if(ScalabilityLevelDownButton && !ScalabilityLevelDownButton->OnClicked.IsBound())
+    {
+        ScalabilityLevelDownButton->OnClicked.AddDynamic(this, &ThisClass::DecreaseScalability);
+    }
+
+    UGameUserSettings* UserSettings = UGameUserSettings::GetGameUserSettings();
+    CurrentScalabilityLevel = UserSettings->GetOverallScalabilityLevel();
+    SetScalabilityLevelText();
+    
 }
 bool UOptionsMenu::Initialize()
 {
@@ -50,14 +68,22 @@ bool UOptionsMenu::Initialize()
         ApplyButton->OnClicked.AddDynamic(this, &ThisClass::ApplyButtonClicked);
     }
 
+    if(ScalabilityLevelUpButton && !ScalabilityLevelUpButton->OnClicked.IsBound())
+    {
+        ScalabilityLevelUpButton->OnClicked.AddDynamic(this, &ThisClass::IncreaseScalability);
+    }
+
+    if(ScalabilityLevelDownButton && !ScalabilityLevelDownButton->OnClicked.IsBound())
+    {
+        ScalabilityLevelDownButton->OnClicked.AddDynamic(this, &ThisClass::DecreaseScalability);
+    }
+
     return true;
 }
 
 void UOptionsMenu::ReturnButtonClicked()
 {
     if(!IsValid(StartMenuWidget)) return;
-
-    GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Return Button Clicked")));
     
     UMultiplayerStartMenu* StartMenu = CreateWidget<UMultiplayerStartMenu>(GetWorld(), StartMenuWidget);
     StartMenu->MenuInit();
@@ -66,5 +92,48 @@ void UOptionsMenu::ReturnButtonClicked()
 
 void UOptionsMenu::ApplyButtonClicked()
 {
-    GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Apply Button Clicked")));
+    UGameUserSettings* UserSettings = UGameUserSettings::GetGameUserSettings();
+    UserSettings->SetOverallScalabilityLevel(CurrentScalabilityLevel);
+}
+
+void UOptionsMenu::IncreaseScalability()
+{
+    CurrentScalabilityLevel++;
+    CurrentScalabilityLevel = FMath::Clamp(CurrentScalabilityLevel, 0, 4);
+    SetScalabilityLevelText();
+}
+
+void UOptionsMenu::DecreaseScalability()
+{
+    CurrentScalabilityLevel--;
+    CurrentScalabilityLevel = FMath::Clamp(CurrentScalabilityLevel, 0, 4);
+    SetScalabilityLevelText();
+}
+
+void UOptionsMenu::SetScalabilityLevelText()
+{
+    switch (CurrentScalabilityLevel)
+    {
+    case 0:
+        ScalabilityLevelText->SetText(FText::FromString("Low"));
+        break;
+    case 1:
+        ScalabilityLevelText->SetText(FText::FromString("Medium"));
+        break;
+    case 2:
+        ScalabilityLevelText->SetText(FText::FromString("High"));
+        break;
+    case 3:
+        ScalabilityLevelText->SetText(FText::FromString("Epic"));
+        break;
+    case 4:
+        ScalabilityLevelText->SetText(FText::FromString("Cinematic"));
+        break;
+    case -1:
+        ScalabilityLevelText->SetText(FText::FromString("Custom"));
+        break;
+    default:
+        ScalabilityLevelText->SetText(FText::FromString("Custom"));
+        break;
+    }
 }

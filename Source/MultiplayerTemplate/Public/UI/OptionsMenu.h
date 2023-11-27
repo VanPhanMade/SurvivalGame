@@ -27,14 +27,33 @@ private:
 	UPROPERTY( meta = (BindWidget))
 	class UButton* ApplyButton;
 
+	UPROPERTY( meta = (BindWidget))
+	class UTextBlock* ScalabilityLevelText;
+
+	UPROPERTY( meta = (BindWidget))
+	class UButton* ScalabilityLevelDownButton;
+
+	UPROPERTY( meta = (BindWidget))
+	class UButton* ScalabilityLevelUpButton;
+
 	UPROPERTY(EditAnywhere, Category = HUD, meta=(AllowPrivateAccess="true"))
 	TSubclassOf<class UUserWidget> StartMenuWidget;
+
+	int32 CurrentScalabilityLevel;
 
 	UFUNCTION()
 	void ReturnButtonClicked();
 
 	UFUNCTION()
 	void ApplyButtonClicked();
+
+	UFUNCTION()
+	void IncreaseScalability();
+
+	UFUNCTION()
+	void DecreaseScalability();
+
+	void SetScalabilityLevelText();
 
 
 
