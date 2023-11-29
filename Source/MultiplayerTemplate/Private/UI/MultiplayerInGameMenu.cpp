@@ -16,7 +16,7 @@ void UMultiplayerInGameMenu::MenuInit()
     UWorld* World = GetWorld();
     if(World)
     {
-        PlayerController = PlayerController == nullptr ? World->GetFirstPlayerController() : PlayerController;
+        PlayerController = PlayerController == nullptr ? GetOwningPlayer() : PlayerController;
         if(PlayerController)
         {
             FInputModeGameAndUI InputModeData;
@@ -36,10 +36,6 @@ void UMultiplayerInGameMenu::MenuInit()
     if(GameInstance)
     {
         MultiplayerSessionsSubsystem = GameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>();
-        if(MultiplayerSessionsSubsystem)
-        {
-            MultiplayerSessionsSubsystem->MultiplayerOnDestroySessionComplete.AddDynamic(this, &ThisClass::OnDestroySession);
-        }
     }
 }
 
@@ -63,10 +59,6 @@ void UMultiplayerInGameMenu::MenuTearDown()
     {
         ExitGameButton->OnClicked.RemoveDynamic(this, &ThisClass::ExitGameButtonClicked);
     }
-    if(MultiplayerSessionsSubsystem && MultiplayerSessionsSubsystem->MultiplayerOnDestroySessionComplete.IsBound())
-    {
-        MultiplayerSessionsSubsystem->MultiplayerOnDestroySessionComplete.RemoveDynamic(this, &ThisClass::OnDestroySession);
-    }
 }
 
 bool UMultiplayerInGameMenu::Initialize()
@@ -76,34 +68,6 @@ bool UMultiplayerInGameMenu::Initialize()
     return true;
 }
 
-void UMultiplayerInGameMenu::OnDestroySession(bool bWasSuccessful)
-{
-    if(bWasSuccessful == false) 
-    {
-        ExitGameButton->SetIsEnabled(true);
-        return;
-    }
-
-    UWorld* World = GetWorld();
-    if(World)
-    {   
-        //will return nullptr if we're a client
-        AGameModeBase* GameMode = World->GetAuthGameMode<AGameModeBase>();
-        if(GameMode)
-        {
-            GameMode->ReturnToMainMenuHost();
-        }
-        else
-        {
-            PlayerController = PlayerController == nullptr ? World->GetFirstPlayerController() : PlayerController;
-            if(PlayerController)
-            {
-                PlayerController->ClientReturnToMainMenuWithTextReason(FText());
-            }
-        }
-    }
-}
-
 void UMultiplayerInGameMenu::ExitGameButtonClicked()
 {
     ExitGameButton->SetIsEnabled(false);
@@ -111,5 +75,23 @@ void UMultiplayerInGameMenu::ExitGameButtonClicked()
     if(MultiplayerSessionsSubsystem)
     {
         MultiplayerSessionsSubsystem->DestroySession();
+        UWorld* World = GetWorld();
+        if(World)
+        {   
+            //will return nullptr if we're a client
+            AGameModeBase* GameMode = World->GetAuthGameMode<AGameModeBase>();
+            if(GameMode)
+            {
+                GameMode->ReturnToMainMenuHost();
+            }
+            else
+            {
+                PlayerController = PlayerController == nullptr ? GetOwningPlayer() : PlayerController;
+                if(PlayerController)
+                {
+                    PlayerController->ClientReturnToMainMenuWithTextReason(FText());
+                }
+            }
+        }
     }
 }

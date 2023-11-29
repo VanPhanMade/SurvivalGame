@@ -22,9 +22,6 @@ public:
 protected:
 	virtual bool Initialize() override;
 
-	UFUNCTION()
-	void OnDestroySession(bool bWasSuccessful);
-
 private:
 	UPROPERTY( meta = (BindWidget))
 	class UButton* ExitGameButton;

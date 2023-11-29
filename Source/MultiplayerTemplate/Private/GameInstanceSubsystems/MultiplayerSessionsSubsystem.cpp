@@ -237,6 +237,7 @@ void UMultiplayerSessionsSubsystem::OnStartSessionComplete(FName SessionName, bo
 }
 
 void UMultiplayerSessionsSubsystem::OnUpdateSessionCompleted(FName SessionName, bool bWasSuccessful)
+
 {
     if(!SessionInterface.IsValid()) return MultiplayerOnUpdateSessionComplete.Broadcast(false);
     SessionInterface->ClearOnUpdateSessionCompleteDelegate_Handle(UpdateSessionCompleteDelegateHandle);
@@ -251,6 +252,7 @@ void UMultiplayerSessionsSubsystem::OnUpdateSessionCompleted(FName SessionName, 
         MultiplayerOnUpdateSessionComplete.Broadcast(false);
     }
 }
+
 bool UMultiplayerSessionsSubsystem::TryTravelToCurrentSession()
 {
     SessionInterface = SessionInterface.IsValid() ? SessionInterface : Online::GetSessionInterface(GetWorld());
