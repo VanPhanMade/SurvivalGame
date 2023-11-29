@@ -8,7 +8,7 @@ public class MultiplayerTemplate : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG", "OnlineSubsystemSteam", "OnlineSubsystem", "OnlineSubsystemUtils"});
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG", "OnlineSubsystemSteam", "OnlineSubsystem", "OnlineSubsystemUtils", "SlateCore"});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 	}

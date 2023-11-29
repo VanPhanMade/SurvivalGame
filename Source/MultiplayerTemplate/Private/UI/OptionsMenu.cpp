@@ -10,6 +10,10 @@
 #include "Math/UnrealMathUtility.h"
 #include "Sound/SoundClass.h"
 #include "Sound/SoundMix.h"
+#include "Internationalization/Internationalization.h"
+#include "Kismet/KismetInternationalizationLibrary.h"
+#include "Components/ComboBoxString.h"
+#include "Types/SlateEnums.h"
 
 void UOptionsMenu::MenuInit()
 {
@@ -31,8 +35,6 @@ void UOptionsMenu::MenuInit()
             PlayerController->SetShowMouseCursor(true);
         }
     }
-
-    ApplyButtonCallbacks();
 
     UGameUserSettings* UserSettings = UGameUserSettings::GetGameUserSettings();
     CurrentScalabilityLevel = UserSettings->GetOverallScalabilityLevel();
@@ -131,6 +133,18 @@ void UOptionsMenu::MenuInit()
     if(MusicAudioSoundClass && MusicAudioSlider) MusicAudioSlider->SetValue(MusicAudioSoundClass->Properties.Volume);
     if(SFXAudioSoundClass && SFXAudioSlider) SFXAudioSlider->SetValue(SFXAudioSoundClass->Properties.Volume);
     if(DialogueAudioSoundClass && DialogueAudioSlider) DialogueAudioSlider->SetValue(DialogueAudioSoundClass->Properties.Volume);
+
+    if(LanguageOptions)
+    {
+        for(auto Culture : UKismetInternationalizationLibrary::GetLocalizedCultures(true, false, false, false))
+        {
+            LanguageOptions->AddOption(UKismetInternationalizationLibrary::GetCultureDisplayName(Culture, true));
+        }
+
+        LanguageOptions->SetSelectedOption(UKismetInternationalizationLibrary::GetCultureDisplayName(UKismetInternationalizationLibrary::GetCurrentCulture(), true));
+    }
+
+    ApplyButtonCallbacks();
 }
 
 bool UOptionsMenu::Initialize()
@@ -153,6 +167,20 @@ void UOptionsMenu::ReturnButtonClicked()
 
 void UOptionsMenu::ApplyButtonClicked()
 {
+    UKismetInternationalizationLibrary::SetCurrentCulture(NewCulture, true);
+    UKismetInternationalizationLibrary::SetCurrentLanguage(NewCulture, true);
+    UKismetInternationalizationLibrary::SetCurrentLocale(NewCulture, true);
+
+    LanguageOptions->ClearOptions();
+    if(LanguageOptions)
+    {
+        for(auto Culture : UKismetInternationalizationLibrary::GetLocalizedCultures(true, false, false, false))
+        {
+            LanguageOptions->AddOption(UKismetInternationalizationLibrary::GetCultureDisplayName(Culture, true));
+        }
+        LanguageOptions->SetSelectedOption(UKismetInternationalizationLibrary::GetCultureDisplayName(UKismetInternationalizationLibrary::GetCurrentCulture(), true));
+    }
+
     UGameUserSettings* UserSettings = UGameUserSettings::GetGameUserSettings();
     UserSettings->SetOverallScalabilityLevel(CurrentScalabilityLevel);
     UserSettings->SetFullscreenMode(CurrentWindowMode);
@@ -234,12 +262,26 @@ void UOptionsMenu::DialogueAudioSliderChange(float SliderValue)
     DialogueAudioSoundClass->Properties.Volume = NewVolume;
 }
 
+void UOptionsMenu::LanguageOptionChanged(FString Selection, ESelectInfo::Type Type)
+{
+    LanguageOptions->SetSelectedOption(Selection);
+    for(auto Culture : UKismetInternationalizationLibrary::GetLocalizedCultures(true, false, false, false))
+    {
+        if(UKismetInternationalizationLibrary::GetCultureDisplayName(Culture, true) == Selection)
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, FString::Printf(TEXT("New language set: %s"), *Culture));
+            NewCulture = Culture;
+            return;
+        }
+    }
+}
+
 void UOptionsMenu::SetScalabilityLevelText()
 {
     switch (CurrentScalabilityLevel)
     {
         case 0:
-            ScalabilityLevelText->SetText(FText::FromString("Low"));
+            ScalabilityLevelText->SetText(LowGraphicsText);
             break;
         case 1:
             ScalabilityLevelText->SetText(FText::FromString("Medium"));
@@ -417,5 +459,10 @@ void UOptionsMenu::ApplyButtonCallbacks()
     if(DialogueAudioSlider && !DialogueAudioSlider->OnValueChanged.IsBound())
     {
         DialogueAudioSlider->OnValueChanged.AddDynamic(this, &ThisClass::DialogueAudioSliderChange);
+    }
+
+    if(LanguageOptions && !LanguageOptions->OnSelectionChanged.IsBound())
+    {
+        LanguageOptions->OnSelectionChanged.AddDynamic(this, &ThisClass::LanguageOptionChanged);
     }
 }

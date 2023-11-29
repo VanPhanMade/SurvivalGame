@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Types/SlateEnums.h"
 #include "GenericPlatform/GenericWindow.h"
 #include "OptionsMenu.generated.h"
 
@@ -116,6 +117,12 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Audio", meta=(AllowPrivateAccess="true"))
 	class USoundMix* DialogueAudioMixer;
 
+	UPROPERTY( meta = (BindWidget))
+	class UComboBoxString* LanguageOptions;
+
+	FString NewCulture;
+
+	
 	// ** On click callbacks ** //
 	UFUNCTION()
 	void ReturnButtonClicked();
@@ -157,6 +164,9 @@ private:
 	UFUNCTION()
 	void DialogueAudioSliderChange(float SliderValue);
 
+	UFUNCTION()
+	void LanguageOptionChanged(FString Selection, enum ESelectInfo::Type Type);
+
 	// ** Helper functions ** //
 	void SetScalabilityLevelText();
 
@@ -165,6 +175,13 @@ private:
 	void SetScreenResolutionText();
 
 	void ApplyButtonCallbacks();
+
+	#define LOCTEXT_NAMESPACE "Options"
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Localization", meta=(AllowPrivateAccess="true"))
+	FText LowGraphicsText = LOCTEXT("LowGraphics", "Low");
+
+	#undef LOCTEXT_NAMESPACE
 
 	
 };
