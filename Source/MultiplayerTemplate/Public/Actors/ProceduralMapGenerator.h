@@ -32,7 +32,7 @@ protected:
 	UPROPERTY(EditAnywhere, meta=(ClampMin = 0))
 	int32 YSize = 50;
 	UPROPERTY(EditAnywhere, meta=(ClampMin = 0))
-	float ZScale = 400.f;
+	float ZScale = 1.0f;
 	UPROPERTY(EditAnywhere, meta=(ClampMin = 0))
 	float NoiseScale = .1f; // Lower scale results in larger flat pools
 
@@ -42,16 +42,32 @@ protected:
 	float UVScale = 1;	// Stretch of UV maps, bigger = smaller tesselation of materials
 	
 private:
-	class UProceduralMeshComponent * ProceduralMesh;
+	class UProceduralMeshComponent* ProceduralMesh;
 	TArray<FVector> Vertices;
 	TArray<int> Triangles;
 	TArray<FVector2D> UVs;
 	TArray<FVector> Normals;
 	TArray<struct FProcMeshTangent> Tangents;
-	
+	TArray<FLinearColor> VertexColor;
+
+	class FastNoiseLite* Continentalness;
+	class FastNoiseLite* Erosion;
+	class FastNoiseLite* Peaks;
+	class FastNoiseLite* Temperature;
+	class FastNoiseLite* Moisture;
+
+	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess="true"))
+	class UCurveFloat* ContinentalCurve;
+	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess="true"))
+	class UCurveFloat* ErosionCurve;
+	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess="true"))
+	class UCurveFloat* PeaksCurve;
+
 	void CreateMesh();
 	void CreateVertices();
 	void CreateTriangles();
+	void SetupNoise(class FastNoiseLite* Noise, int Seed, float Frequency, int Octaves);
+	float CalculateHeight(float XCoordinate, float YCoordinate);
 	
 
 	int32 MeshSectionIndex = 0;
