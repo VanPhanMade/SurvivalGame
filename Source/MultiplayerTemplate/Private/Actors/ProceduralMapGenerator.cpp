@@ -36,19 +36,8 @@ void AProceduralMapGenerator::CreateMapChunk()
 	CreateTriangles();
 	UKismetProceduralMeshLibrary::CalculateTangentsForMesh(Vertices, Triangles, UVs, Normals, Tangents);
 	CreateMesh();
-	CoordinatePosition();
 }
 
-FVector2D AProceduralMapGenerator::CoordinatePosition()
-{
-	int32 AspectRatio = (XSize + YSize) / 2;
-	float ActorXPosition = GetActorLocation().X;
-	float ActorYPosition = GetActorLocation().Y;
-	FVector2D Coordinates(ActorXPosition / AspectRatio, ActorYPosition / AspectRatio);
-
-	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Map chunk coords: %f , %f"), Coordinates.X, Coordinates.Y));
-    return Coordinates;
-}
 void AProceduralMapGenerator::BeginPlay()
 {
 	Super::BeginPlay();
@@ -97,10 +86,13 @@ void AProceduralMapGenerator::CreateVertices()
 	{
 		for(int32 Y = 0; Y <= YSize; ++Y)
 		{
-			float XPosition = (X * Scale) - ((XSize / 2) * Scale) + GetActorLocation().X;
-			float YPosition = (Y * Scale) - ((YSize / 2) * Scale) + GetActorLocation().Y;
+			float XOffset = XCoordinateOffset * (XSize);
+			float YOffset = YCoordinateOffset * (YSize);
+
+			
+			float XPosition = (X - (XSize / 2) + XOffset) * Scale;
+			float YPosition = (Y - (YSize / 2) + YOffset) * Scale;
 			float VertexHeight = CalculateHeight(XPosition, YPosition);
-			//FMath::PerlinNoise2D(FVector2D(X * NoiseScale + .1, Y * NoiseScale + .1)) * ZScale)
 			if(VertexHeight < 1000)
 			{
 				VertexColor.Add(FLinearColor(FColor(0, 0, 1)));
@@ -111,7 +103,7 @@ void AProceduralMapGenerator::CreateVertices()
 			}
 
 			Vertices.Add(FVector(XPosition, YPosition, VertexHeight));
-			UVs.Add(FVector2D((X * UVScale)  - ((XSize / 2) * UVScale ), (Y * UVScale) - ((YSize / 2) * UVScale)));
+			UVs.Add(FVector2D((X - (XSize / 2)) * UVScale, ((Y - (YSize / 2)) * UVScale)));
 
 		}
 	}

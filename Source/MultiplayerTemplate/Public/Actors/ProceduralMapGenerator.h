@@ -16,7 +16,6 @@ public:
 	AProceduralMapGenerator();
 
 	void CreateMapChunk();
-	FVector2D CoordinatePosition();
 
 protected:
 	virtual void BeginPlay() override;
@@ -40,6 +39,12 @@ protected:
 	float Scale = 200;	// Distance between each coordinate point
 	UPROPERTY(EditAnywhere, meta=(ClampMin = 0.0001))
 	float UVScale = 1;	// Stretch of UV maps, bigger = smaller tesselation of materials
+
+	UPROPERTY(EditAnywhere)
+	int32 XCoordinateOffset = 0;
+
+	UPROPERTY(EditAnywhere)
+	int32 YCoordinateOffset = 0;
 	
 private:
 	class UProceduralMeshComponent* ProceduralMesh;

@@ -15,7 +15,7 @@ class MULTIPLAYERTEMPLATE_API ABasicCharacter : public ACharacter
 
 public:
 	ABasicCharacter();
-	class UCameraComponent* GetCameraComponent() const { return CameraComponent; }
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
@@ -26,8 +26,6 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	class UInputMappingContext* DefaultMappingContext;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* InteractAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* StartSessionAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* OpenInGameMenuAction;
@@ -37,32 +35,45 @@ private:
 	class UInputAction* MoveAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* InteractAction;
 
 	/** Components */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* SpringArmComponent;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* CameraComponent;
 
 	/** Variables */
-	UPROPERTY(EditAnywhere, Category="Variables", meta=(AllowPrivateAccess="true"))
+	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess="true"))
 	class USoundBase* InteractSFX;
 
-	UPROPERTY(EditAnywhere, Category = HUD, meta=(AllowPrivateAccess="true"))
+	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess="true"))
 	TSubclassOf<class UUserWidget> InGameMenuWidget;
 
-	UPROPERTY(meta=(AllowPrivateAccess="true"))
+	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess="true"))
 	class UMultiplayerInGameMenu* MultiplayerInGameMenu;
 
+	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess="true"), meta=(ClampMin = 0))
+	float InteractionMaxDistance = 200.f;
+	
 	bool bInGameMenuOpen = false;
 
 	/** Input Callback Functions */
-	void Interact();
 	void StartSession();
 	void OpenInGameMenu();
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
+	void Interact();
 
+	// Replicated Variables
+	UPROPERTY()
+	class AInteractable* LastInteractable;
 
+	// RPCs
+	UFUNCTION(Server, Reliable)
+	void Server_DestroyActor(AActor* ActorToDestroy);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_DestroyActor(AActor* ActorToDestroy);
 };
