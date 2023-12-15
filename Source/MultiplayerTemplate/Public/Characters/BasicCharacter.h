@@ -66,7 +66,7 @@ private:
 	class UMultiplayerInGameMenu* MultiplayerInGameMenu;
 
 	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess="true"), meta=(ClampMin = 0))
-	float InteractionMaxDistance = 200.f;
+	float InteractionMaxDistance = 100.f;
 	
 	UPROPERTY(VisibleAnywhere, meta=(AllowPrivateAccess="true"))
 	bool bInGameMenuOpen = false;
@@ -85,6 +85,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	UAnimMontage* HitByPunchMontage;
+
+	UPROPERTY(EditAnywhere)
+	UAnimMontage* PickupItemMontage;
 
 	/** Input Callback Functions */
 	void StartSession();
@@ -155,6 +158,9 @@ private:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_PlayHitByAttackAnim(UAnimMontage* MontageToPlay, AActor* AttackedActor);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_PlayAnim(UAnimMontage* MontageToPlay, AActor* AppliedActor);
 
 public:
 	bool GetCanFight();

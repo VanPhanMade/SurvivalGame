@@ -183,7 +183,11 @@ void ABasicCharacter::Interact()
 		FVector Start = CrosshairWorldPosition;
 		FVector End = Start + (CrosshairWorldDirection * InteractionMaxDistance);
 		FHitResult HitResult;
-		GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility);
+		FCollisionShape Sphere = FCollisionShape::MakeSphere(32);
+		FCollisionQueryParams QueryParams;
+		QueryParams.AddIgnoredActor(this);	
+		GetWorld()->SweepSingleByChannel(HitResult, Start, End, FQuat::Identity, ECollisionChannel::ECC_Visibility, Sphere, QueryParams);
+
 		if(!HitResult.bBlockingHit)
 		{
 			HitResult.ImpactPoint = End;
@@ -228,6 +232,10 @@ void ABasicCharacter::Server_DestroyActor_Implementation(AActor *ActorToDestroy)
 {
 	if(IsValid(ActorToDestroy))
 	{
+		if(Cast<AInteractable>(ActorToDestroy))
+		{
+			if(PickupItemMontage) Multicast_PlayAnim(PickupItemMontage, this);
+		}
 		Multicast_DestroyActor(ActorToDestroy);
 	}
 }
@@ -334,13 +342,25 @@ void ABasicCharacter::Multicast_PlayAttackAnim_Implementation()
 
 void ABasicCharacter::Multicast_PlayHitByAttackAnim_Implementation(UAnimMontage* MontageToPlay, AActor* AttackedActor)
 {
-	
 	if(MontageToPlay && AttackedActor)
 	{
 		ABasicCharacter* AttackedPlayer = Cast<ABasicCharacter>(AttackedActor);
 		if(AttackedPlayer)
 		{
 			UAnimInstance* AnimInstance = AttackedPlayer->GetMesh()->GetAnimInstance();
+			if(AnimInstance) AnimInstance->Montage_Play(MontageToPlay);
+		}	
+	}
+}
+
+void ABasicCharacter::Multicast_PlayAnim_Implementation(UAnimMontage* MontageToPlay, AActor* AppliedActor)
+{
+	if(MontageToPlay && AppliedActor)
+	{
+		ABasicCharacter* AppliedPlayer = Cast<ABasicCharacter>(AppliedActor);
+		if(AppliedPlayer)
+		{
+			UAnimInstance* AnimInstance = AppliedPlayer->GetMesh()->GetAnimInstance();
 			if(AnimInstance) AnimInstance->Montage_Play(MontageToPlay);
 		}	
 	}
