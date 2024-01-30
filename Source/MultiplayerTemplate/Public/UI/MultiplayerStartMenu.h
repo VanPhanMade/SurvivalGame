@@ -53,6 +53,15 @@ private:
 	UPROPERTY( meta = (BindWidget))
 	class UButton* QuitButton;
 
+	UPROPERTY( meta = (BindWidget))
+	class UWidgetSwitcher* WidgetSwitcher;
+
+	UPROPERTY( meta = (BindWidget))
+	class UServerSearchList* ServerSearchList;
+
+	UPROPERTY( meta = (BindWidget))
+	class UCreateSessionOptions* CreateSessionOptions;
+
 	UPROPERTY(EditAnywhere, Category = HUD, meta=(AllowPrivateAccess="true"))
 	TSubclassOf<class UUserWidget> OptionsMenuWidget;
 
@@ -74,6 +83,8 @@ private:
 
 	// Removes the widget when joining game session
 	void MenuTearDown();
+
+	void ReturnToStartMenu();
 
 	int32 NumberPublicConnections{6};
 	FString MatchType{TEXT("FreeForAll")};

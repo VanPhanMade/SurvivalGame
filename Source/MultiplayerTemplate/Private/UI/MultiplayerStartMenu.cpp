@@ -2,7 +2,10 @@
 
 
 #include "UI/MultiplayerStartMenu.h"
+#include "UI/CreateSessionOptions.h"
+#include "UI/ServerSearchList.h"
 #include "Components/Button.h"
+#include "Components/WidgetSwitcher.h"
 #include "OnlineSessionSettings.h"
 #include "GameInstanceSubsystems/MultiplayerSessionsSubsystem.h"
 #include "Interfaces/OnlineSessionInterface.h"
@@ -75,6 +78,16 @@ bool UMultiplayerStartMenu::Initialize()
         QuitButton->OnClicked.AddDynamic(this, &ThisClass::QuitButtonClicked);
     }
 
+    if(ServerSearchList)
+    {
+        ServerSearchList->OnBackButtonServerSearchListClicked.AddUObject(this, &ThisClass::ReturnToStartMenu);
+    }
+
+    if(CreateSessionOptions)
+    {
+        CreateSessionOptions->OnBackButtonCreateSessionClicked.AddUObject(this, &ThisClass::ReturnToStartMenu);
+    }
+
     return true;
 }
 
@@ -106,6 +119,8 @@ void UMultiplayerStartMenu::OnFindSessions(const TArray<FOnlineSessionSearchResu
     if(bWasSuccessful)
     {
         GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Green, FString::Printf(TEXT("Sessions searched menu callback!")));
+        // Populate the scroll box w/ a list of buttons based off how many people are hosting
+        // Enable visibility for the scroll box
         return;
     }
 }
@@ -152,22 +167,38 @@ void UMultiplayerStartMenu::OnStartSession(bool bWasSuccessful)
 
 void UMultiplayerStartMenu::HostButtonClicked()
 {
-    HostButton->SetIsEnabled(false);
-    JoinButton->SetIsEnabled(false);
-    if(MultiplayerSessionsSubsystem)
+    // HostButton->SetIsEnabled(false);
+    // JoinButton->SetIsEnabled(false);
+    if(WidgetSwitcher)
     {
-        MultiplayerSessionsSubsystem->CreateSession(NumberPublicConnections, MatchType);
+        WidgetSwitcher->SetActiveWidgetIndex(1);
     }
+    else
+    {
+        if(MultiplayerSessionsSubsystem)
+        {
+            MultiplayerSessionsSubsystem->CreateSession(NumberPublicConnections, MatchType);
+        }
+    }
+    
 }
 
 void UMultiplayerStartMenu::JoinButtonClicked()
 {
-    HostButton->SetIsEnabled(false);
-    JoinButton->SetIsEnabled(false);
-    if(MultiplayerSessionsSubsystem)
+    // HostButton->SetIsEnabled(false);
+    // JoinButton->SetIsEnabled(false);
+    if(WidgetSwitcher)
     {
-        MultiplayerSessionsSubsystem->FindSessions(100);
+        WidgetSwitcher->SetActiveWidgetIndex(2);
     }
+    else
+    {
+        if(MultiplayerSessionsSubsystem)
+        {
+            MultiplayerSessionsSubsystem->FindSessions(100);
+        }
+    }
+    
 }
 
 void UMultiplayerStartMenu::OptionsButtonClicked()
@@ -201,5 +232,13 @@ void UMultiplayerStartMenu::MenuTearDown()
             PlayerController->SetInputMode(InputModeData);
             PlayerController->SetShowMouseCursor(false);
         }
+    }
+}
+
+void UMultiplayerStartMenu::ReturnToStartMenu()
+{
+    if(WidgetSwitcher)
+    {
+        WidgetSwitcher->SetActiveWidgetIndex(0);
     }
 }

@@ -188,8 +188,8 @@ void UMultiplayerSessionsSubsystem::OnFindSessionsComplete(bool bWasSuccessful)
 		    		FString::Printf(TEXT("Host: %s"), *Result.Session.OwningUserName)
 		    	);
 		    }
-
-            return JoinSession(Result);
+            return;
+            //return JoinSession(Result);
         }
     }
 }
