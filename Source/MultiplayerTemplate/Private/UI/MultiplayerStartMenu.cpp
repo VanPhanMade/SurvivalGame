@@ -12,6 +12,8 @@
 #include "OnlineSubsystemUtils.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "UI/OptionsMenu.h"
+#include "UI/EditPlayerOptions.h"
+#include "Characters/BasicCharacter.h"
 
 void UMultiplayerStartMenu::MenuInit(int32 NumberOfPublicConnections, FString TypeOfMatch)
 {
@@ -47,11 +49,26 @@ void UMultiplayerStartMenu::MenuInit(int32 NumberOfPublicConnections, FString Ty
     if(MultiplayerSessionsSubsystem)
     {
         MultiplayerSessionsSubsystem->MultiplayerOnCreateSessionComplete.AddDynamic(this, &ThisClass::OnCreateSession);
-        MultiplayerSessionsSubsystem->MultiplayerOnFindSessionsComplete.AddUObject(this, &ThisClass::OnFindSessions);
-        MultiplayerSessionsSubsystem->MultiplayerOnJoinSessionComplete.AddUObject(this, &ThisClass::OnJoinSession);
+        //MultiplayerSessionsSubsystem->MultiplayerOnFindSessionsComplete.AddUObject(this, &ThisClass::OnFindSessions);
+        //MultiplayerSessionsSubsystem->MultiplayerOnJoinSessionComplete.AddUObject(this, &ThisClass::OnJoinSession);
         MultiplayerSessionsSubsystem->MultiplayerOnDestroySessionComplete.AddDynamic(this, &ThisClass::OnDestroySession);
         MultiplayerSessionsSubsystem->MultiplayerOnStartSessionComplete.AddDynamic(this, &ThisClass::OnStartSession);
     }
+
+    if(ServerSearchList)
+    {
+        ServerSearchList->MenuInit();
+    }
+
+    if(CreateSessionOptions)
+    {
+        CreateSessionOptions->MenuInit();
+    }
+
+    if(EditPlayerOptions)
+    {
+        EditPlayerOptions->MenuInit();
+    } 
 }
 
 bool UMultiplayerStartMenu::Initialize()
@@ -66,6 +83,11 @@ bool UMultiplayerStartMenu::Initialize()
     if(JoinButton)
     {
         JoinButton->OnClicked.AddDynamic(this, &ThisClass::JoinButtonClicked);
+    }
+
+    if(EditPlayerButton)
+    {
+        EditPlayerButton->OnClicked.AddDynamic(this, &ThisClass::EditPlayerButtonClicked);
     }
 
     if(OptionsButton)
@@ -88,6 +110,12 @@ bool UMultiplayerStartMenu::Initialize()
         CreateSessionOptions->OnBackButtonCreateSessionClicked.AddUObject(this, &ThisClass::ReturnToStartMenu);
     }
 
+    if(EditPlayerOptions)
+    {
+        EditPlayerOptions->OnBackButtonEditPlayerClicked.AddUObject(this, &ThisClass::ReturnToStartMenu);
+    }
+
+
     return true;
 }
 
@@ -100,7 +128,7 @@ void UMultiplayerStartMenu::NativeDestruct()
 
 void UMultiplayerStartMenu::OnCreateSession(bool bWasSuccessful)
 {
-    if(bWasSuccessful) GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Green, FString::Printf(TEXT("Session created menu callback!")));
+    if(bWasSuccessful) //GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Green, FString::Printf(TEXT("Session created menu callback!")));
 
     HostButton->SetIsEnabled(true);
     JoinButton->SetIsEnabled(true);
@@ -129,10 +157,10 @@ void UMultiplayerStartMenu::OnJoinSession(EOnJoinSessionCompleteResult::Type Res
 {
     if(Result == EOnJoinSessionCompleteResult::Success)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow, FString::Printf(TEXT("Traveling.......")));
+        //GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow, FString::Printf(TEXT("Traveling.......")));
         if(MultiplayerSessionsSubsystem->TryTravelToCurrentSession())
         {
-            GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Green, FString::Printf(TEXT("Traveled complete!")));
+            //GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Green, FString::Printf(TEXT("Traveled complete!")));
         }
         else
         {
@@ -162,13 +190,11 @@ void UMultiplayerStartMenu::OnDestroySession(bool bWasSuccessful)
 
 void UMultiplayerStartMenu::OnStartSession(bool bWasSuccessful)
 {
-
+    
 }
 
 void UMultiplayerStartMenu::HostButtonClicked()
 {
-    // HostButton->SetIsEnabled(false);
-    // JoinButton->SetIsEnabled(false);
     if(WidgetSwitcher)
     {
         WidgetSwitcher->SetActiveWidgetIndex(1);
@@ -177,7 +203,7 @@ void UMultiplayerStartMenu::HostButtonClicked()
     {
         if(MultiplayerSessionsSubsystem)
         {
-            MultiplayerSessionsSubsystem->CreateSession(NumberPublicConnections, MatchType);
+            MultiplayerSessionsSubsystem->CreateSession(NumberPublicConnections, MatchType, false);
         }
     }
     
@@ -185,11 +211,10 @@ void UMultiplayerStartMenu::HostButtonClicked()
 
 void UMultiplayerStartMenu::JoinButtonClicked()
 {
-    // HostButton->SetIsEnabled(false);
-    // JoinButton->SetIsEnabled(false);
     if(WidgetSwitcher)
     {
         WidgetSwitcher->SetActiveWidgetIndex(2);
+        if(ServerSearchList) ServerSearchList->DisplayListOfAvailableSessions();
     }
     else
     {
@@ -199,6 +224,19 @@ void UMultiplayerStartMenu::JoinButtonClicked()
         }
     }
     
+}
+
+void UMultiplayerStartMenu::EditPlayerButtonClicked()
+{
+    if(WidgetSwitcher)
+    {
+        if(EditPlayerOptions)
+        {
+            WidgetSwitcher->SetActiveWidgetIndex(3);
+            EditPlayerOptions->RefreshOptions();
+        }
+        
+    }
 }
 
 void UMultiplayerStartMenu::OptionsButtonClicked()
@@ -232,6 +270,16 @@ void UMultiplayerStartMenu::MenuTearDown()
             PlayerController->SetInputMode(InputModeData);
             PlayerController->SetShowMouseCursor(false);
         }
+    }
+
+    if(ServerSearchList)
+    {
+        ServerSearchList->MenuTearDown();
+    }
+
+    if(CreateSessionOptions)
+    {
+        CreateSessionOptions->MenuTearDown();
     }
 }
 

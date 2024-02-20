@@ -23,8 +23,21 @@ protected:
 	virtual bool Initialize() override;
 
 private:
+	
+	UPROPERTY( meta = (BindWidget))
+	class UButton* ContinueGameButton;
+
+	UPROPERTY( meta = (BindWidget))
+	class UButton* ExitServerButton;
+
 	UPROPERTY( meta = (BindWidget))
 	class UButton* ExitGameButton;
+
+	UFUNCTION()
+	void ContinueGameButtonClicked();
+
+	UFUNCTION()
+	void ExitServerButtonClicked();
 
 	UFUNCTION()
 	void ExitGameButtonClicked();

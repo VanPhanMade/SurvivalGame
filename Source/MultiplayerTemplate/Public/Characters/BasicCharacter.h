@@ -16,6 +16,7 @@ class MULTIPLAYERTEMPLATE_API ABasicCharacter : public ACharacter
 public:
 	ABasicCharacter();
 	friend class AMainLevelGameMode;
+	friend class UMultiplayerInGameMenu;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -89,6 +90,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	UAnimMontage* PickupItemMontage;
 
+	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess="true"))
+	class UDataTable* CharactersDataTable;
+
 	/** Input Callback Functions */
 	void StartSession();
 	void OpenInGameMenu();
@@ -125,6 +129,12 @@ private:
 	UFUNCTION()
 	void OnRep_CurrentHealth();
 
+	UPROPERTY(ReplicatedUsing = OnRep_UpdatedMesh, VisibleAnywhere)
+	class USkeletalMesh* UpdatedMesh;
+
+	UFUNCTION()
+	void OnRep_UpdatedMesh();
+
 	// RPCs
 	UFUNCTION(Server, Reliable)
 	void Server_DestroyActor(AActor* ActorToDestroy);
@@ -148,6 +158,9 @@ private:
 	void Server_SetDead(bool IsDead);
 
 	UFUNCTION(Server, Reliable)
+	void Server_SetLoadForCharacter(class USkeletalMesh* NewMeshComponent);
+
+	UFUNCTION(Server, Reliable)
 	void Server_SetInputXY(float XInput, float YInput);
 
 	UFUNCTION(NetMulticast, Reliable)
@@ -162,9 +175,13 @@ private:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_PlayAnim(UAnimMontage* MontageToPlay, AActor* AppliedActor);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_SetLoadForCharacter(class USkeletalMesh* NewMeshComponent, AActor* LoadedCharacter);
+
 public:
 	bool GetCanFight();
 	bool GetIsAiming();
 	FVector2D GetInputXY();
 	FORCEINLINE bool GetIsDead() const { return bIsDead; }
+	void LoadCharacterSelection();
 };

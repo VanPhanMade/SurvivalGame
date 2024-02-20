@@ -12,11 +12,14 @@
 #include "Actors/Interactable.h"
 #include "Components/CapsuleComponent.h"
 #include "GameModes/MainLevelGameMode.h"
+#include "Components/SkeletalMeshComponent.h"
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Blueprint/UserWidget.h"
 #include "UI/MultiplayerInGameMenu.h"
+#include "DataTables/CharacterPresetsDataTable.h"
+#include "SaveGame/MultiplayerSaveGameData.h"
 
 #include "Sound/SoundBase.h"
 
@@ -57,6 +60,13 @@ void ABasicCharacter::BeginPlay()
 	}
 
 	Server_SetDead(false);
+
+	if(IsLocallyControlled())
+	{
+		LoadCharacterSelection();
+		Server_SetLoadForCharacter(GetMesh()->SkeletalMesh);
+	}
+	
 }
 
 void ABasicCharacter::Tick(float DeltaTime)
@@ -258,11 +268,30 @@ void ABasicCharacter::Server_SetFighting_Implementation(bool bIsFight)
 	bCanFight = bIsFight;
 }
 
+void ABasicCharacter::Server_SetLoadForCharacter_Implementation(USkeletalMesh* NewMeshComponent)
+{
+	if(NewMeshComponent)
+	{
+		UpdatedMesh = NewMeshComponent;
+		//GetMesh()->SetSkeletalMesh(NewMeshComponent, true);
+		//Multicast_SetLoadForCharacter(NewMeshComponent, this);
+	}
+}
+
 void ABasicCharacter::OnRep_CurrentHealth()
 {
 	// if(CurrentHealth == MaxHealth) DrawDebugSphere(GetWorld(), GetActorLocation(), 32, 16, FColor::Green, true);
 	// else if(CurrentHealth == 0) DrawDebugSphere(GetWorld(), GetActorLocation(), 40, 16, FColor::Red, true);
 	// else DrawDebugSphere(GetWorld(), GetActorLocation(), 16, 16, FColor::Yellow, true);
+}
+
+void ABasicCharacter::OnRep_UpdatedMesh()
+{
+	if(UpdatedMesh)
+	{	
+		GetMesh()->SetSkeletalMesh(UpdatedMesh, true);
+	}
+	
 }
 
 void ABasicCharacter::Server_DoDamage_Implementation(AActor* AttackedActor, AActor* AttackerActor)
@@ -366,6 +395,17 @@ void ABasicCharacter::Multicast_PlayAnim_Implementation(UAnimMontage* MontageToP
 	}
 }
 
+void ABasicCharacter::Multicast_SetLoadForCharacter_Implementation(USkeletalMesh* NewMeshComponent, AActor* LoadedCharacter)
+{
+	if(NewMeshComponent)
+	{
+		if(LoadedCharacter)
+		{
+			Cast<ABasicCharacter>(LoadedCharacter)->GetMesh()->SetSkeletalMesh(NewMeshComponent, true);
+		}
+	}
+}
+
 bool ABasicCharacter::GetCanFight()
 {
 	return bCanFight;
@@ -387,5 +427,18 @@ void ABasicCharacter::DeathTimerFinished()
 	if(GameMode)
 	{
 		GameMode->RequestRespawn(this, Controller);
+	}
+}
+
+void ABasicCharacter::LoadCharacterSelection()
+{
+	USkeletalMeshComponent* CurrentMesh = GetMesh();
+	UMultiplayerSaveGameData* SaveData = Cast<UMultiplayerSaveGameData>(UGameplayStatics::CreateSaveGameObject(UMultiplayerSaveGameData::StaticClass()));
+	SaveData = Cast<UMultiplayerSaveGameData>(UGameplayStatics::LoadGameFromSlot("CharacterSelection", 0));
+	if(CharactersDataTable)
+	{
+		static const FString ContextString(TEXT("Event Context String"));
+		auto Row = CharactersDataTable->FindRow<FCharacterPresets>(SaveData->SavedSelectionID, ContextString, true);
+		CurrentMesh->SetSkeletalMesh(Row->CharacterModel, true);
 	}
 }

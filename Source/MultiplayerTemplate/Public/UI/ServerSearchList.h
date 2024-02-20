@@ -18,8 +18,17 @@ class MULTIPLAYERTEMPLATE_API UServerSearchList : public UUserWidget
 public:
 	FOnBackButtonClicked OnBackButtonServerSearchListClicked;
 
+	void MenuInit();
+
+	void MenuTearDown();
+
+	UFUNCTION()
+	void DisplayListOfAvailableSessions();
+
 protected:
 	virtual bool Initialize() override; 
+
+	void OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful);
 
 private:
 	UPROPERTY( meta = (BindWidget))
@@ -30,6 +39,11 @@ private:
 
 	UPROPERTY( meta = (BindWidget))
 	class UButton* BackButton;
+
+	UPROPERTY(EditAnywhere, Category = HUD, meta=(AllowPrivateAccess="true"))
+	TSubclassOf<class UUserWidget> ServerSearchResultWidget;
+
+	class UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;
 
 	UFUNCTION()
 	void BackButtonClicked();

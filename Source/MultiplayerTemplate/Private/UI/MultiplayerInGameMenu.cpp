@@ -6,6 +6,8 @@
 #include "Components/Button.h"
 #include "GameInstanceSubsystems/MultiplayerSessionsSubsystem.h"
 #include "GameFramework/GameModeBase.h"
+#include "Characters/BasicCharacter.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 void UMultiplayerInGameMenu::MenuInit()
 {
@@ -25,6 +27,16 @@ void UMultiplayerInGameMenu::MenuInit()
             InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
             PlayerController->SetShowMouseCursor(true);
         }
+    }
+
+    if(ContinueGameButton && !ContinueGameButton->OnClicked.IsBound())
+    {
+        ContinueGameButton->OnClicked.AddDynamic(this, &ThisClass::ContinueGameButtonClicked);
+    }
+
+    if(ExitServerButton && !ExitServerButton->OnClicked.IsBound())
+    {
+        ExitServerButton->OnClicked.AddDynamic(this, &ThisClass::ExitServerButtonClicked);
     }
 
     if(ExitGameButton && !ExitGameButton->OnClicked.IsBound())
@@ -55,7 +67,17 @@ void UMultiplayerInGameMenu::MenuTearDown()
         }
     }
 
-    if(ExitGameButton && ExitGameButton->OnClicked.IsBound())
+    if(ContinueGameButton && !ContinueGameButton->OnClicked.IsBound())
+    {
+        ContinueGameButton->OnClicked.RemoveDynamic(this, &ThisClass::ContinueGameButtonClicked);
+    }
+
+    if(ExitServerButton && ExitServerButton->OnClicked.IsBound())
+    {
+        ExitServerButton->OnClicked.RemoveDynamic(this, &ThisClass::ExitServerButtonClicked);
+    }
+
+    if(ExitGameButton && !ExitGameButton->OnClicked.IsBound())
     {
         ExitGameButton->OnClicked.RemoveDynamic(this, &ThisClass::ExitGameButtonClicked);
     }
@@ -68,9 +90,15 @@ bool UMultiplayerInGameMenu::Initialize()
     return true;
 }
 
-void UMultiplayerInGameMenu::ExitGameButtonClicked()
+void UMultiplayerInGameMenu::ContinueGameButtonClicked()
 {
-    ExitGameButton->SetIsEnabled(false);
+    ABasicCharacter* OwningPlayer = Cast<ABasicCharacter>(GetOwningPlayer()->GetPawn());
+    OwningPlayer->OpenInGameMenu();
+}
+
+void UMultiplayerInGameMenu::ExitServerButtonClicked()
+{
+    ExitServerButton->SetIsEnabled(false);
 
     if(MultiplayerSessionsSubsystem)
     {
@@ -94,4 +122,9 @@ void UMultiplayerInGameMenu::ExitGameButtonClicked()
             }
         }
     }
+}
+
+void UMultiplayerInGameMenu::ExitGameButtonClicked()
+{
+    UKismetSystemLibrary::QuitGame(this, GetOwningPlayer(), EQuitPreference::Quit, true);
 }

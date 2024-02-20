@@ -48,6 +48,9 @@ private:
 	class UButton* JoinButton;
 
 	UPROPERTY( meta = (BindWidget))
+	class UButton* EditPlayerButton;
+
+	UPROPERTY( meta = (BindWidget))
 	class UButton* OptionsButton;
 
 	UPROPERTY( meta = (BindWidget))
@@ -62,15 +65,21 @@ private:
 	UPROPERTY( meta = (BindWidget))
 	class UCreateSessionOptions* CreateSessionOptions;
 
+	UPROPERTY( meta = (BindWidget))
+	class UEditPlayerOptions* EditPlayerOptions;
+
 	UPROPERTY(EditAnywhere, Category = HUD, meta=(AllowPrivateAccess="true"))
 	TSubclassOf<class UUserWidget> OptionsMenuWidget;
 
-	// Button on click call back functions
+	// Button onClick call back functions
 	UFUNCTION()
 	void HostButtonClicked();
 
 	UFUNCTION()
 	void JoinButtonClicked();
+
+	UFUNCTION()
+	void EditPlayerButtonClicked();
 
 	UFUNCTION()
 	void OptionsButtonClicked();

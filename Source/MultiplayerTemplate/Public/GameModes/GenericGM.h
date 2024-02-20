@@ -13,5 +13,6 @@ UCLASS()
 class MULTIPLAYERTEMPLATE_API AGenericGM : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
+
 };

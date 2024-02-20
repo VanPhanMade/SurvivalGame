@@ -4,6 +4,7 @@
 #include "GameModes/LobbyGameMode.h"
 #include "GameFramework/GameStateBase.h"
 #include "GameFramework/PlayerState.h"
+#include "Characters/BasicCharacter.h"
 
 
 void ALobbyGameMode::PostLogin(APlayerController *NewPlayer)
@@ -32,6 +33,8 @@ void ALobbyGameMode::PostLogin(APlayerController *NewPlayer)
 				    FColor::Yellow,
 				    FString::Printf(TEXT("%s has joined the game!"), *PlayerName)
 			    );
+
+                //Cast<ABasicCharacter>(PlayerState->GetOwningController()->GetPawn())->LoadCharacterSelection();
             }
             
         }

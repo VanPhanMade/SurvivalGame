@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Interfaces/OnlineSessionInterface.h"
+#include "OnlineSessionSettings.h"
 #include "ServerSearchResult.generated.h"
 
 /**
@@ -15,6 +17,9 @@ class MULTIPLAYERTEMPLATE_API UServerSearchResult : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	class FOnlineSessionSearchResult* SessionResult;
+
+	void MenuInit(FOnlineSessionSearchResult& SessionResultRef);
 
 protected:
 	virtual bool Initialize() override; 
@@ -31,4 +36,15 @@ private:
 
 	UPROPERTY( meta = (BindWidget))
 	class UButton* JoinServerButton;
+
+	UFUNCTION()
+	void JoinServerButtonClicked();
+
+	// Subsystem that contains all session handling logic
+	class UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;
+
+	// Multiplayer callbacks
+	void OnJoinSession(EOnJoinSessionCompleteResult::Type Result);
+
+	void OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful);
 };

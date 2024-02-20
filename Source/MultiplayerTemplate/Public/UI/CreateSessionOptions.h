@@ -25,6 +25,10 @@ public:
 protected:
 	virtual bool Initialize() override; 
 
+	// Callbacks for our multiplayer session events
+	UFUNCTION()
+	void OnCreateSession(bool bWasSuccessful);
+
 private:
 	UPROPERTY( meta = (BindWidget))
 	class UEditableTextBox* MaxPlayerAmountTextBox;
@@ -38,7 +42,14 @@ private:
 	UPROPERTY( meta = (BindWidget))
 	class UButton* BackButton;
 
+	// Callback functions for our widgets
 	UFUNCTION()
 	void BackButtonClicked();
+
+	UFUNCTION()
+	void CreateSessionButtonClicked();
+
+	// Subsystem that contains all session handling logic
+	class UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;
 
 };
