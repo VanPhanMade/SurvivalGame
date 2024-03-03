@@ -1,9 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
+#include "UI/CharacterSelectionOption.h"
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
 #include "Components/Button.h"
 
-#include "UI/CharacterSelectionOption.h"
+
 #include "SaveGame/MultiplayerSaveGameData.h"
 #include "Characters/BasicCharacter.h"
 #include "GameInstances/MultiplayerGameInstance.h"
@@ -49,6 +50,10 @@ void UCharacterSelectionOption::SelectButtonClicked()
 {
     UMultiplayerGameInstance* GameInstance = Cast<UMultiplayerGameInstance>(UGameplayStatics::GetGameInstance(this));
     GameInstance->RegisterCharacterSelection(CharacterModel);
+    if(OnClickAudio)
+    {
+        UGameplayStatics::PlaySound2D(this, OnClickAudio);
+    }
     
     UMultiplayerSaveGameData* SaveData = Cast<UMultiplayerSaveGameData>(UGameplayStatics::CreateSaveGameObject(UMultiplayerSaveGameData::StaticClass()));
     SaveData->SavedSelectionID = FName(*CharacterName->GetText().ToString());

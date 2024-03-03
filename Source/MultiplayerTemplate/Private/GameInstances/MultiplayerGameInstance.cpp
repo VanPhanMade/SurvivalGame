@@ -2,7 +2,6 @@
 
 
 #include "GameInstances/MultiplayerGameInstance.h"
-#include "MultiplayerGameInstance.h"
 
 void UMultiplayerGameInstance::LoadSelectedCharacter(APlayerController *ThisPlayer)
 {

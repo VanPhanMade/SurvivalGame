@@ -16,24 +16,12 @@ void ALobbyGameMode::PostLogin(APlayerController *NewPlayer)
         int32 NumberOfPlayers = GameState.Get()->PlayerArray.Num();
         if(GEngine)
         {
-            GEngine->AddOnScreenDebugMessage(
-				1,
-				60.f,
-				FColor::Green,
-				FString::Printf(TEXT("Players in lobby %d"), NumberOfPlayers)
-			);
-
+            GEngine->AddOnScreenDebugMessage(1, 60.f, FColor::Green, FString::Printf(TEXT("Players in lobby %d"), NumberOfPlayers));
             APlayerState* PlayerState = NewPlayer->GetPlayerState<APlayerState>();
             if(PlayerState)
             {
                 FString PlayerName = PlayerState->GetPlayerName();
-                GEngine->AddOnScreenDebugMessage(
-				    -1,
-				    60.f,
-				    FColor::Yellow,
-				    FString::Printf(TEXT("%s has joined the game!"), *PlayerName)
-			    );
-
+                GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Yellow, FString::Printf(TEXT("%s has joined the game!"), *PlayerName) );
                 //Cast<ABasicCharacter>(PlayerState->GetOwningController()->GetPawn())->LoadCharacterSelection();
             }
             
@@ -50,25 +38,14 @@ void ALobbyGameMode::Logout(AController *Exiting)
         int32 NumberOfPlayers = GameState.Get()->PlayerArray.Num();
         if(GEngine)
         {
-            GEngine->AddOnScreenDebugMessage(
-				1,
-				60.f,
-				FColor::Green,
-				FString::Printf(TEXT("Players in lobby %d"), NumberOfPlayers - 1)
-			);
+            GEngine->AddOnScreenDebugMessage(1, 60.f, FColor::Green, FString::Printf(TEXT("Players in lobby %d"), NumberOfPlayers - 1));
 
             APlayerState* PlayerState = Exiting->GetPlayerState<APlayerState>();
             if(PlayerState)
             {
                 FString PlayerName = PlayerState->GetPlayerName();
-                GEngine->AddOnScreenDebugMessage(
-				    -1,
-				    60.f,
-				    FColor::Yellow,
-				    FString::Printf(TEXT("%s has exitted the game!"), *PlayerName)
-			    );
+                GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Yellow, FString::Printf(TEXT("%s has exitted the game!"), *PlayerName));
             }
-            
         }
     }
 }
