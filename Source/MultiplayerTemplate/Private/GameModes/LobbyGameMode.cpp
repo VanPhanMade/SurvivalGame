@@ -2,9 +2,13 @@
 
 
 #include "GameModes/LobbyGameMode.h"
+
 #include "GameFramework/GameStateBase.h"
 #include "GameFramework/PlayerState.h"
 #include "Characters/BasicCharacter.h"
+#include "GameInstances/MultiplayerGameInstance.h"
+
+#include "Kismet/GameplayStatics.h"
 
 
 void ALobbyGameMode::PostLogin(APlayerController *NewPlayer)
@@ -16,13 +20,19 @@ void ALobbyGameMode::PostLogin(APlayerController *NewPlayer)
         int32 NumberOfPlayers = GameState.Get()->PlayerArray.Num();
         if(GEngine)
         {
-            GEngine->AddOnScreenDebugMessage(1, 60.f, FColor::Green, FString::Printf(TEXT("Players in lobby %d"), NumberOfPlayers));
-            APlayerState* PlayerState = NewPlayer->GetPlayerState<APlayerState>();
-            if(PlayerState)
+            // GEngine->AddOnScreenDebugMessage(1, 60.f, FColor::Green, FString::Printf(TEXT("Players in lobby %d"), NumberOfPlayers));
+            // APlayerState* PlayerState = NewPlayer->GetPlayerState<APlayerState>();
+            // if(PlayerState)
+            // {
+            //     FString PlayerName = PlayerState->GetPlayerName();
+            //     GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Yellow, FString::Printf(TEXT("%s has joined the game!"), *PlayerName) );
+            //     //Cast<ABasicCharacter>(PlayerState->GetOwningController()->GetPawn())->LoadCharacterSelection();
+            // }
+
+            UMultiplayerGameInstance* GameInstance = Cast<UMultiplayerGameInstance>(UGameplayStatics::GetGameInstance(this));
+            if(GameInstance)
             {
-                FString PlayerName = PlayerState->GetPlayerName();
-                GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Yellow, FString::Printf(TEXT("%s has joined the game!"), *PlayerName) );
-                //Cast<ABasicCharacter>(PlayerState->GetOwningController()->GetPawn())->LoadCharacterSelection();
+                GameInstance->LoadSelectedCharacter(NewPlayer);
             }
             
         }

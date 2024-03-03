@@ -17,6 +17,7 @@ public:
 	ABasicCharacter();
 	friend class AMainLevelGameMode;
 	friend class UMultiplayerInGameMenu;
+	friend class UMultiplayerGameInstance;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -184,4 +185,5 @@ public:
 	FVector2D GetInputXY();
 	FORCEINLINE bool GetIsDead() const { return bIsDead; }
 	void LoadCharacterSelection();
+	void LoadCharacterSelection(USkeletalMesh* NewMesh);
 };

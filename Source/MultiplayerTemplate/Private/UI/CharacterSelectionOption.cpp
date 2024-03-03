@@ -58,5 +58,6 @@ void UCharacterSelectionOption::SelectButtonClicked()
     UMultiplayerSaveGameData* SaveData = Cast<UMultiplayerSaveGameData>(UGameplayStatics::CreateSaveGameObject(UMultiplayerSaveGameData::StaticClass()));
     SaveData->SavedSelectionID = FName(*CharacterName->GetText().ToString());
     UGameplayStatics::SaveGameToSlot(SaveData, TEXT("CharacterSelection"), 0);
-    Cast<ABasicCharacter>(GetOwningPlayerPawn())->LoadCharacterSelection();
+
+    Cast<ABasicCharacter>(GetOwningPlayerPawn())->LoadCharacterSelection(CharacterModel);
 }

@@ -438,12 +438,31 @@ void ABasicCharacter::DeathTimerFinished()
 void ABasicCharacter::LoadCharacterSelection()
 {
 	USkeletalMeshComponent* CurrentMesh = GetMesh();
-	UMultiplayerSaveGameData* SaveData = Cast<UMultiplayerSaveGameData>(UGameplayStatics::CreateSaveGameObject(UMultiplayerSaveGameData::StaticClass()));
-	SaveData = Cast<UMultiplayerSaveGameData>(UGameplayStatics::LoadGameFromSlot("CharacterSelection", 0));
-	if(CharactersDataTable)
+	// UMultiplayerSaveGameData* SaveData = Cast<UMultiplayerSaveGameData>(UGameplayStatics::CreateSaveGameObject(UMultiplayerSaveGameData::StaticClass()));
+	// SaveData = Cast<UMultiplayerSaveGameData>(UGameplayStatics::LoadGameFromSlot("CharacterSelection", 0));
+	// if(CharactersDataTable)
+	// {
+	// 	static const FString ContextString(TEXT("Event Context String"));
+	// 	auto Row = CharactersDataTable->FindRow<FCharacterPresets>(SaveData->SavedSelectionID, ContextString, true);
+	// 	CurrentMesh->SetSkeletalMesh(Row->CharacterModel, true);
+	// }
+	if(UpdatedMesh != nullptr)
 	{
-		static const FString ContextString(TEXT("Event Context String"));
-		auto Row = CharactersDataTable->FindRow<FCharacterPresets>(SaveData->SavedSelectionID, ContextString, true);
-		CurrentMesh->SetSkeletalMesh(Row->CharacterModel, true);
+		CurrentMesh->SetSkeletalMesh(UpdatedMesh, true);
+	}
+	
+}
+
+void ABasicCharacter::LoadCharacterSelection(USkeletalMesh *NewMesh)
+{
+	if(NewMesh != nullptr)
+	{
+		UpdatedMesh = NewMesh;
+	}
+
+	if(UpdatedMesh)
+	{
+		USkeletalMeshComponent* CurrentMesh = GetMesh();
+		CurrentMesh->SetSkeletalMesh(UpdatedMesh, true);
 	}
 }
