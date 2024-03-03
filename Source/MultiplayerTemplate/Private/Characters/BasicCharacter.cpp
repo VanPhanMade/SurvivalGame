@@ -61,11 +61,16 @@ void ABasicCharacter::BeginPlay()
 
 	Server_SetDead(false);
 
-	if(IsLocallyControlled())
-	{
-		LoadCharacterSelection();
-		Server_SetLoadForCharacter(GetMesh()->SkeletalMesh);
-	}
+	// if(IsLocallyControlled())
+	// {
+	// 	UMultiplayerSaveGameData* SaveData = Cast<UMultiplayerSaveGameData>(UGameplayStatics::CreateSaveGameObject(UMultiplayerSaveGameData::StaticClass()));
+	// 	SaveData = Cast<UMultiplayerSaveGameData>(UGameplayStatics::LoadGameFromSlot("CharacterSelection", 0));
+	// 	if(SaveData)
+	// 	{
+	// 		LoadCharacterSelection();
+	// 		Server_SetLoadForCharacter(GetMesh()->SkeletalMesh);
+	// 	}
+	// }
 	
 }
 

@@ -196,11 +196,9 @@ void UMultiplayerSessionsSubsystem::OnStartSessionComplete(FName SessionName, bo
 
     UWorld* World = GetWorld();
     if(World) World->ServerTravel(FString("/Game/Maps/Main?listen"), true);
-
 }
 
 void UMultiplayerSessionsSubsystem::OnUpdateSessionCompleted(FName SessionName, bool bWasSuccessful)
-
 {
     if(!SessionInterface.IsValid()) return MultiplayerOnUpdateSessionComplete.Broadcast(false);
     SessionInterface->ClearOnUpdateSessionCompleteDelegate_Handle(UpdateSessionCompleteDelegateHandle);
