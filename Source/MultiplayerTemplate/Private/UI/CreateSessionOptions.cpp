@@ -48,7 +48,6 @@ bool UCreateSessionOptions::Initialize()
 
 void UCreateSessionOptions::OnCreateSession(bool bWasSuccessful)
 {
-    //if(bWasSuccessful) GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Green, FString::Printf(TEXT("Session created menu callback!")));]
     BackButton->SetIsEnabled(true);
     CreateSessionButton->SetIsEnabled(true);
     EnableLanCheckbox->SetIsEnabled(true);

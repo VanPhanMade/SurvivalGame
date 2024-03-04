@@ -185,5 +185,7 @@ public:
 	FVector2D GetInputXY();
 	FORCEINLINE bool GetIsDead() const { return bIsDead; }
 	void LoadCharacterSelection();
+
+	UFUNCTION(Server, Reliable)
 	void LoadCharacterSelection(USkeletalMesh* NewMesh);
 };

@@ -21,11 +21,13 @@ public:
 	UFUNCTION()
 	virtual void RegisterCharacterSelection(USkeletalMesh* NewSkeletalMesh);
 
+	virtual void SaveIDsForPlayers(TArray<FName> NewPlayerSaveIDs);
+
+	virtual void LoadPlayerData(APlayerController* ThisPlayer, FName DataID);
+	
+	class USkeletalMesh* SavedSkeletalMeshSelection;
 protected:
 
 private:
-	class USkeletalMesh* SavedSkeletalMeshSelection;
-
-
-
+	TArray<FName> PlayerSaveIDs;
 };

@@ -55,6 +55,7 @@ void UCharacterSelectionOption::SelectButtonClicked()
         UGameplayStatics::PlaySound2D(this, OnClickAudio);
     }
     
+    // We save only the ID since the datatable is found on every character
     UMultiplayerSaveGameData* SaveData = Cast<UMultiplayerSaveGameData>(UGameplayStatics::CreateSaveGameObject(UMultiplayerSaveGameData::StaticClass()));
     SaveData->SavedSelectionID = FName(*CharacterName->GetText().ToString());
     UGameplayStatics::SaveGameToSlot(SaveData, TEXT("CharacterSelection"), 0);

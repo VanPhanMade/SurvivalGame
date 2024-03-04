@@ -46,6 +46,8 @@ ABasicCharacter::ABasicCharacter()
 	
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	SetReplicates(true);
+	SetReplicateMovement(true);
 }
 
 void ABasicCharacter::BeginPlay() 
@@ -107,6 +109,7 @@ void ABasicCharacter::GetLifetimeReplicatedProps(TArray < FLifetimeProperty>& Ou
 	DOREPLIFETIME_CONDITION(ABasicCharacter, RightScalar, COND_None);
 	DOREPLIFETIME_CONDITION(ABasicCharacter, CurrentHealth, COND_None);
 	DOREPLIFETIME_CONDITION(ABasicCharacter, bIsDead, COND_None);
+	DOREPLIFETIME(ABasicCharacter, UpdatedMesh);
 }
 
 void ABasicCharacter::StartSession()
@@ -278,8 +281,8 @@ void ABasicCharacter::Server_SetLoadForCharacter_Implementation(USkeletalMesh* N
 	if(NewMeshComponent)
 	{
 		UpdatedMesh = NewMeshComponent;
-		//GetMesh()->SetSkeletalMesh(NewMeshComponent, true);
-		//Multicast_SetLoadForCharacter(NewMeshComponent, this);
+		GetMesh()->SetSkeletalMesh(NewMeshComponent, true);
+		Multicast_SetLoadForCharacter(NewMeshComponent, this);
 	}
 }
 
@@ -438,14 +441,6 @@ void ABasicCharacter::DeathTimerFinished()
 void ABasicCharacter::LoadCharacterSelection()
 {
 	USkeletalMeshComponent* CurrentMesh = GetMesh();
-	// UMultiplayerSaveGameData* SaveData = Cast<UMultiplayerSaveGameData>(UGameplayStatics::CreateSaveGameObject(UMultiplayerSaveGameData::StaticClass()));
-	// SaveData = Cast<UMultiplayerSaveGameData>(UGameplayStatics::LoadGameFromSlot("CharacterSelection", 0));
-	// if(CharactersDataTable)
-	// {
-	// 	static const FString ContextString(TEXT("Event Context String"));
-	// 	auto Row = CharactersDataTable->FindRow<FCharacterPresets>(SaveData->SavedSelectionID, ContextString, true);
-	// 	CurrentMesh->SetSkeletalMesh(Row->CharacterModel, true);
-	// }
 	if(UpdatedMesh != nullptr)
 	{
 		CurrentMesh->SetSkeletalMesh(UpdatedMesh, true);
@@ -453,7 +448,7 @@ void ABasicCharacter::LoadCharacterSelection()
 	
 }
 
-void ABasicCharacter::LoadCharacterSelection(USkeletalMesh *NewMesh)
+void ABasicCharacter::LoadCharacterSelection_Implementation(USkeletalMesh *NewMesh)
 {
 	if(NewMesh != nullptr)
 	{
@@ -464,5 +459,6 @@ void ABasicCharacter::LoadCharacterSelection(USkeletalMesh *NewMesh)
 	{
 		USkeletalMeshComponent* CurrentMesh = GetMesh();
 		CurrentMesh->SetSkeletalMesh(UpdatedMesh, true);
+		Server_SetLoadForCharacter(UpdatedMesh);
 	}
 }

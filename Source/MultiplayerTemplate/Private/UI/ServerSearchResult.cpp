@@ -23,8 +23,6 @@ void UServerSearchResult::MenuInit(FOnlineSessionSearchResult& SessionResultRef)
     int32 Ping = SessionResult->PingInMs;
     const FString PingString = FString::Printf(TEXT("%d m/s"), Ping);
     PingText->SetText(FText::FromString(PingString));
-
-    
 }
 
 
